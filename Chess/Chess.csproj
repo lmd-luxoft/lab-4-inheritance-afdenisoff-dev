@@ -40,6 +40,8 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Coordinate.cs" />
+    <Compile Include="Board.cs" />
     <Compile Include="ChessFigure.cs" />
     <Compile Include="TestClass.cs" />
   </ItemGroup>
