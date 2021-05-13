@@ -2,106 +2,168 @@
 using System;
 
 namespace Chess
-{
-    public class ChessFigure
+{	
+	public class Coordinate
     {
-        private Type type;
-        private string currentCoord;
+		public char Column { get; }
+		public int Row { get; }
 
-        public ChessFigure(Type type, string currentCoord)
-        {
-            this.type = type;
-            this.currentCoord = currentCoord;
-        }
-
-        public enum Type
-        {
-            ROOK,
-            KNIGHT,
-            BISHOP,
-            PAWN,
-            KING,
-            QUEEN
-        }
-
-        internal bool Move(string nextCoord)
-        {
-			if (type == Type.PAWN)
-			{
-				if (nextCoord[0] >= 'A' && nextCoord[0] <= 'H' && nextCoord[1] >= '1' && nextCoord[1] <= '8')
-				{
-					if (nextCoord[0] != currentCoord[0] || nextCoord[1] <= currentCoord[1] || (nextCoord[1] - currentCoord[1] != 1 && (currentCoord[1] != '2' || nextCoord[1] != '4')))
-						return false;
-					else
-						return true;
-				}
-				else return false;
-
-			}
-
-			else if (type == Type.ROOK)
-			{
-				if (nextCoord[0] >= 'A' && nextCoord[0] <= 'H' && nextCoord[1] >= '1' && nextCoord[1] <= '8')
-				{
-					if ((nextCoord[0] != currentCoord[0]) && (nextCoord[1] != currentCoord[1]) || ((nextCoord[0] == currentCoord[0]) && (nextCoord[1] == currentCoord[1])))
-						return false;
-					else
-						return true;
-
-				}
-				else return false;
-			}
-			else if (type == Type.KNIGHT)
-			{
-				if (nextCoord[0] >= 'A' && nextCoord[0] <= 'H' && nextCoord[1] >= '1' && nextCoord[1] <= '8')
-				{
-					int dx, dy;
-					dx = Math.Abs(nextCoord[0] - currentCoord[0]);
-					dy = Math.Abs(nextCoord[1] - currentCoord[1]);
-					if (!(Math.Abs(nextCoord[0] - currentCoord[0]) == 1 && Math.Abs(nextCoord[1] - currentCoord[1]) == 2 || Math.Abs(nextCoord[0] - currentCoord[0]) == 2 && Math.Abs(nextCoord[1] - currentCoord[1]) == 1))
-						return false;
-					else
-						return true;
-				}
-				else return false;
-			}
-
-			else if (type == Type.BISHOP)
-			{
-				if (nextCoord[0] >= 'A' && nextCoord[0] <= 'H' && nextCoord[1] >= '1' && nextCoord[1] <= '8')
-				{
-					if (!(Math.Abs(nextCoord[0] - currentCoord[0]) == Math.Abs(nextCoord[1] - currentCoord[1])))
-						return false;
-					else
-						return true;
-				}
-				else return false;
-			}
-
-			else if (type == Type.KING)
-			{
-				if (nextCoord[0] >= 'A' && nextCoord[0] <= 'H' && nextCoord[1] >= '1' && nextCoord[1] <= '8')
-				{
-					if (!(Math.Abs(nextCoord[0] - currentCoord[0]) <= 1 && Math.Abs(nextCoord[1] - currentCoord[1]) <= 1))
-						return false;
-					else
-						return true;
-				}
-				else return false;
-			}
-			else if (type == Type.QUEEN)
-			{
-				if (nextCoord[0] >= 'A' && nextCoord[0] <= 'H' && nextCoord[1] >= '1' && nextCoord[1] <= '8')
-				{
-					if (!(Math.Abs(nextCoord[0] - currentCoord[0]) == Math.Abs(nextCoord[1] - currentCoord[1]) || nextCoord[0] == currentCoord[0] || nextCoord[1] == currentCoord[1]))
-						return false;
-					else
-						return true;
-				}
-				else return false;
-			}
-			else
-				return false;
+		public Coordinate() 
+		{ 
 		}
+
+		public Coordinate(string coordinate)
+        {
+			Load(coordinate);
+        }
+
+		public void Load(string coordinate)
+		{
+            if (!IsValid(coordinate))
+            {
+				throw new ArgumentException();
+            }
+
+		}
+
+		private bool IsValid(string coordinate)
+        {
+			return true;
+        }
     }
+
+	public abstract class ChessFigure
+    {
+		protected const int firstRowCoordinate = 1;
+		protected const int lastRowCoordinate = 8;
+		protected const char firstColumnCoordinate = 'A';
+		protected const char lastColumnCoordinate = 'H';
+
+		protected Coordinate CurrentCoordinate { get; } = new Coordinate();
+		protected Coordinate NextCoordinate { get; private set; } = new Coordinate();
+
+		public ChessFigure(string currentCoordinate)
+		{
+			CurrentCoordinate.Load(currentCoordinate);
+		}
+
+		public virtual bool Move(string nextCoordinate)
+        {
+			NextCoordinate = new Coordinate(nextCoordinate);
+
+			return true;
+		}
+	}
+
+
+    public class Rook : ChessFigure
+    {
+		public Rook(string currentCoordinate)
+			: base(currentCoordinate)
+        {
+        }
+
+        public override bool Move(string nextCoordinate)
+        {
+			base.Move(nextCoordinate);
+
+			if ((NextCoordinate.Column != CurrentCoordinate.Column) && (NextCoordinate.Row != CurrentCoordinate.Row) || ((NextCoordinate.Column == CurrentCoordinate.Column) && (NextCoordinate.Row == CurrentCoordinate.Row)))
+				return false;
+			else
+				return true;
+		}
+	}
+
+    public class Knight : ChessFigure
+    {
+		public Knight(string currentCoordinate)
+			: base(currentCoordinate)
+		{
+		}
+
+		public override bool Move(string nextCoordinate)
+        {
+			base.Move(nextCoordinate);
+
+			int dx, dy;
+			dx = Math.Abs(NextCoordinate.Column - CurrentCoordinate.Column);
+			dy = Math.Abs(NextCoordinate.Row - CurrentCoordinate.Row);
+			if (!(Math.Abs(NextCoordinate.Column - CurrentCoordinate.Column) == 1 && Math.Abs(NextCoordinate.Row - CurrentCoordinate.Row) == 2 || Math.Abs(NextCoordinate.Column - CurrentCoordinate.Column) == 2 && Math.Abs(NextCoordinate.Row - CurrentCoordinate.Row) == 1))
+				return false;
+			else
+				return true;
+		}
+	}
+
+    public class Bishop : ChessFigure
+    {
+		public Bishop(string currentCoordinate)
+			: base(currentCoordinate)
+		{
+		}
+
+		public override bool Move(string nextCoordinate)
+        {
+			base.Move(nextCoordinate);
+
+			if (!(Math.Abs(NextCoordinate.Column - CurrentCoordinate.Column) == Math.Abs(NextCoordinate.Row - CurrentCoordinate.Row)))
+				return false;
+			else
+				return true;
+		}
+	}
+
+    public class Pawn : ChessFigure
+    {
+		public Pawn(string currentCoordinate)
+			: base(currentCoordinate)
+		{
+		}
+
+		public override bool Move(string nextCoordinate)
+        {
+			base.Move(nextCoordinate);
+
+			if (NextCoordinate.Column != CurrentCoordinate.Column || NextCoordinate.Row <= CurrentCoordinate.Row || (NextCoordinate.Row - CurrentCoordinate.Row != 1 && (CurrentCoordinate.Row != 2 || NextCoordinate.Row != 4)))
+				return false;
+			else
+				return true;
+		}
+	}
+
+    public class King : ChessFigure
+    {
+		public King(string currentCoordinate)
+			: base(currentCoordinate)
+		{
+		}
+
+		public override bool Move(string nextCoordinate)
+        {
+			base.Move(nextCoordinate);
+
+			if (!(Math.Abs(NextCoordinate.Column - CurrentCoordinate.Column) <= 1 && Math.Abs(NextCoordinate.Row - CurrentCoordinate.Row) <= 1))
+				return false;
+			else
+				return true;
+		}
+	}
+
+    public class Queen : ChessFigure
+    {
+		public Queen(string currentCoordinate)
+			: base(currentCoordinate)
+		{
+		}
+
+		public override bool Move(string nextCoordinate)
+        {
+			base.Move(nextCoordinate);
+
+			if (!(Math.Abs(NextCoordinate.Column - CurrentCoordinate.Column) == Math.Abs(NextCoordinate.Row - CurrentCoordinate.Row) || NextCoordinate.Column == CurrentCoordinate.Column || NextCoordinate.Row == CurrentCoordinate.Row))
+				return false;
+			else
+				return true;
+		}
+	}
 }
