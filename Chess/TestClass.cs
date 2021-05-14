@@ -1,5 +1,6 @@
 ﻿// NUnit 3 tests
 // See documentation : https://github.com/nunit/docs/wiki/NUnit-Documentation
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -98,6 +99,30 @@ namespace Chess
         {
             var figure = new Queen("D1");
             Assert.AreEqual(false,figure.Move("E3"));
+        }
+
+        [Test]
+        public void IncorrectColumnCoordinateForAnyFigureShouldBeArgumentException()
+        {
+            var figure = new Queen("D1");
+            Assert.Throws<ArgumentException>(() => figure.Move("Z3"));
+        }
+        [Test]
+        public void IncorrectRowCoordinateForAnyFigureShouldBeArgumentException()
+        {
+            var figure = new Queen("D1");
+            Assert.Throws<ArgumentException>(() => figure.Move("E9"));
+        }
+        [Test]
+        public void IncorrectInitColumnCoordinateForAnyFigureShouldBeArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new King("V1"));
+        }
+        [Test]
+        public void IncorrectInitRowCoordinateForAnyFigureShouldBeArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new King("E0"));
+
         }
     }
 }

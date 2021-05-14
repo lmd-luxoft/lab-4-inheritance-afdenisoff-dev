@@ -33,8 +33,10 @@ namespace Chess
 			if (coordinate.Length != 2)
 				return false;
 
-			var columnChar = coordinate[0];
-			var rowString = coordinate.Substring(1);
+			var upperString = coordinate.ToUpper();
+
+			var columnChar = upperString[0];
+			var rowString = upperString.Substring(1);
 
 			if (columnChar < Board.FirstColumnCoordinate || columnChar > Board.LastColumnCoordinate)
 				return false;
